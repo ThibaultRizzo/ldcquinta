@@ -43,11 +43,15 @@ aws acm request-certificate \
 ```bash
 # Get validation details (replace with your certificate ARN)
 aws acm describe-certificate \
-  --certificate-arn arn:aws:acm:us-east-1:ACCOUNT:certificate/CERT_ID \
+  --certificate-arn arn:aws:acm:us-east-1:567440051792:certificate/b4798c95-6a2c-4b6c-a2c6-a0364f6128af \
   --region us-east-1 \
   --query 'Certificate.DomainValidationOptions[0].ResourceRecord'
 ```
-
+{
+    "Name": "_b9729da1f494072d06c266acb38dcf1f.student.luzqr.com.",
+    "Type": "CNAME",
+    "Value": "_b4ffad05d78298c938359567586f6707.xlfgrmvvlj.acm-validations.aws."
+}
 **Option A: Automatic (Recommended)**
 - Go to AWS Certificate Manager Console
 - Click your certificate
@@ -156,7 +160,9 @@ aws cloudfront create-distribution \
   --distribution-config file://infrastructure/cloudfront-config.json \
   --region us-east-1
 ```
-
+E28QBBU83SB043
+d1ksry4j843x26.cloudfront.net
+student.luzqr.com.s3-website-us-east-1.amazonaws.com
 **Save the Distribution ID and Domain Name** from the output!
 
 ### Step 5: Update Route53 DNS
@@ -179,7 +185,7 @@ cat > /tmp/route53-record.json << 'EOF'
         "Type": "A",
         "AliasTarget": {
           "HostedZoneId": "Z2FDTNDATAQYW2",
-          "DNSName": "YOUR_CLOUDFRONT_DOMAIN",
+          "DNSName": "d1ksry4j843x26.cloudfront.net",
           "EvaluateTargetHealth": false
         }
       }
@@ -197,29 +203,29 @@ aws route53 change-resource-record-sets \
 
 ### Step 6: Configure GitHub Secrets
 
-Go to your GitHub repository → Settings → Secrets and variables → Actions → New repository secret
+**Option A: Automated (Recommended)**
 
-Add these secrets:
+Run the IAM setup script:
+```bash
+chmod +x infrastructure/setup-iam-user.sh
+./infrastructure/setup-iam-user.sh
+```
 
-1. **AWS_ACCESS_KEY_ID**
-   ```bash
-   # Create IAM user with programmatic access and these policies:
-   # - AmazonS3FullAccess
-   # - CloudFrontFullAccess (or custom policy)
-   ```
+This will:
+- Create an IAM user with minimal required permissions
+- Generate access keys
+- Display credentials to add to GitHub
 
-2. **AWS_SECRET_ACCESS_KEY**
-   (The secret key for the IAM user above)
+**Option B: Manual Setup**
 
-3. **AWS_S3_BUCKET**
-   ```
-   student.luzqr.com
-   ```
+See detailed guide: [infrastructure/IAM-SETUP.md](IAM-SETUP.md)
 
-4. **AWS_CLOUDFRONT_DISTRIBUTION_ID**
-   ```
-   E1ABCDEFGHIJK (your distribution ID from Step 4)
-   ```
+Then add these secrets to GitHub (Settings → Secrets and variables → Actions):
+
+1. **AWS_ACCESS_KEY_ID** - From IAM user creation
+2. **AWS_SECRET_ACCESS_KEY** - From IAM user creation  
+3. **AWS_S3_BUCKET** - `student.luzqr.com`
+4. **AWS_CLOUDFRONT_DISTRIBUTION_ID** - `E28QBBU83SB043` (from Step 4)
 
 ### Step 7: Push to GitHub
 

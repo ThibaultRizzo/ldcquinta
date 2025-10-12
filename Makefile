@@ -1,4 +1,4 @@
-.PHONY: open chrome dev dashboard help setup-aws deploy
+.PHONY: open chrome dev dashboard help setup-aws setup-iam deploy
 
 # Default target
 help:
@@ -11,7 +11,8 @@ help:
 	@echo "  make dashboard - Open dashboard.html (checklist) in Google Chrome"
 	@echo ""
 	@echo "Deployment:"
-	@echo "  make setup-aws - Run AWS infrastructure setup"
+	@echo "  make setup-aws - Run AWS infrastructure setup (S3)"
+	@echo "  make setup-iam - Setup IAM user for GitHub Actions"
 	@echo "  make deploy    - Deploy to S3 (requires CLOUDFRONT_DISTRIBUTION_ID env var)"
 	@echo ""
 
@@ -35,6 +36,11 @@ dashboard:
 setup-aws:
 	@echo "🚀 Setting up AWS infrastructure..."
 	@./infrastructure/simple-setup.sh
+
+# Setup IAM user for GitHub Actions
+setup-iam:
+	@echo "🔐 Setting up IAM user..."
+	@./infrastructure/setup-iam-user.sh
 
 # Deploy to AWS
 deploy:

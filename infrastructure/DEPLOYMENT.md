@@ -226,7 +226,15 @@ Then add these secrets to GitHub (Settings → Secrets and variables → Actions
 2. **AWS_SECRET_ACCESS_KEY** - From IAM user creation  
 3. **AWS_S3_BUCKET** - `student.luzqr.com`
 4. **AWS_CLOUDFRONT_DISTRIBUTION_ID** - `E28QBBU83SB043` (from Step 4)
-
+{
+    "User": {
+        "Path": "/",
+        "UserName": "ldcquinta-github-actions",
+        "UserId": "AIDAYIHQQBZIPN6VW2F3I",
+        "Arn": "arn:aws:iam::567440051792:user/ldcquinta-github-actions",
+        "CreateDate": "2025-10-12T18:04:27+00:00"
+    }
+}
 ### Step 7: Push to GitHub
 
 ```bash

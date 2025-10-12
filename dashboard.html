@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LDC Quinta Checklist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .category {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .category:not(:last-child) {
+            border-bottom: 2px solid #ddd;
+        }
+
+        .category h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 8px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .item-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .item-text {
+            flex: 1;
+            color: #333;
+        }
+
+        .status-icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        .status-done {
+            color: #27ae60;
+        }
+
+        .status-pending {
+            color: #f39c12;
+        }
+
+        .status-not-needed {
+            color: #95a5a6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .link-btn {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .link-btn:hover {
+            background-color: #8e44ad;
+            transform: translateX(2px);
+        }
+
+        .action-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <h1>🏠 LDC Quinta Checklist</h1>
+
+    <div class="category">
+        <h2>📞 Communication</h2>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Get the esim</span>
+            </div>
+            <span class="status-icon status-pending" title="Pending">⏳</span>
+            <div class="button-group">
+                <button class="link-btn" onclick="window.open('https://www.orange.fr/portail', '_blank')" title="Visit link">→</button>
+                <button class="action-btn" onclick="handleAction(this)">Complete</button>
+            </div>
+        </div>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Get the internet box contract</span>
+            </div>
+            <span class="status-icon status-pending" title="Pending">⏳</span>
+            <div class="button-group">
+                <button class="link-btn" onclick="window.open('https://www.free.fr/', '_blank')" title="Visit link">→</button>
+                <button class="action-btn" onclick="handleAction(this)">Complete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h2>💰 Finance</h2>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Get the bank account</span>
+            </div>
+            <span class="status-icon status-pending" title="Pending">⏳</span>
+            <div class="button-group">
+                <button class="link-btn" onclick="window.open('https://www.boursobank.com/', '_blank')" title="Visit link">→</button>
+                <button class="action-btn" onclick="handleAction(this)">Complete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h2>🚇 Transport</h2>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Get your Navigo</span>
+            </div>
+            <span class="status-icon status-pending" title="Pending">⏳</span>
+            <div class="button-group">
+                <button class="link-btn" onclick="window.open('https://www.iledefrance-mobilites.fr/', '_blank')" title="Visit link">→</button>
+                <button class="action-btn" onclick="handleAction(this)">Complete</button>
+            </div>
+        </div>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Get your velib</span>
+            </div>
+            <span class="status-icon status-not-needed" title="Not needed">−</span>
+        </div>
+    </div>
+
+    <div class="category">
+        <h2>📋 Admin assistance</h2>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">CAF</span>
+            </div>
+            <span class="status-icon status-pending" title="Pending">⏳</span>
+            <div class="button-group">
+                <button class="link-btn" onclick="window.open('https://www.caf.fr/', '_blank')" title="Visit link">→</button>
+                <button class="action-btn" onclick="handleAction(this)">Complete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h2>🛡️ Insurance</h2>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Health insurance</span>
+            </div>
+            <span class="status-icon status-done" title="Done">✓</span>
+        </div>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Home insurance</span>
+            </div>
+            <span class="status-icon status-pending" title="Pending">⏳</span>
+            <div class="button-group">
+                <button class="link-btn" onclick="window.open('https://www.luko.eu/', '_blank')" title="Visit link">→</button>
+                <button class="action-btn" onclick="handleAction(this)">Complete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h2>✈️ Upon arrival</h2>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Airport pickup</span>
+            </div>
+            <span class="status-icon status-done" title="Done">✓</span>
+        </div>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Apartment rental</span>
+            </div>
+            <span class="status-icon status-done" title="Done">✓</span>
+        </div>
+    </div>
+
+    <div class="category">
+        <h2>🤝 Social</h2>
+        <div class="item">
+            <div class="item-content">
+                <span class="item-text">Integration event</span>
+            </div>
+            <span class="status-icon status-pending" title="Pending">⏳</span>
+            <div class="button-group">
+                <button class="link-btn" onclick="window.open('https://www.meetup.com/', '_blank')" title="Visit link">→</button>
+                <button class="action-btn" onclick="handleAction(this)">Complete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleAction(button) {
+            const item = button.closest('.item');
+            const statusIcon = item.querySelector('.status-icon');
+            const buttonGroup = item.querySelector('.button-group');
+            
+            // Change status to done
+            statusIcon.textContent = '✓';
+            statusIcon.className = 'status-icon status-done';
+            statusIcon.title = 'Done';
+            
+            // Remove the entire button group (both arrow and complete buttons)
+            if (buttonGroup) {
+                buttonGroup.remove();
+            }
+            
+            // Optional: Add a subtle animation
+            item.style.transition = 'background-color 0.3s';
+            item.style.backgroundColor = '#d4edda';
+            setTimeout(() => {
+                item.style.backgroundColor = '#f9f9f9';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
+
+

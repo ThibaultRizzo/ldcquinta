@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire - LDC Quinta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .progress-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .step {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .step.completed .step-circle {
+            background: #27ae60;
+            color: white;
+        }
+
+        .step-label {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .step.active .step-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .quiz-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 400px;
+            display: none;
+        }
+
+        .quiz-card.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quiz-card h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+        }
+
+        .question label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .question select,
+        .question input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .question select:focus,
+        .question input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-option:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-back {
+            background: #e0e0e0;
+            color: #555;
+        }
+
+        .btn-back:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Packages Page */
+        .packages-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .package {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .package:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .package.recommended {
+            border-color: #667eea;
+            position: relative;
+            transform: scale(1.05);
+        }
+
+        .package.recommended::before {
+            content: "Recommandé";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .package-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .package-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .package-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .package-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .package-features li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .package-features li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .package-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #667eea;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .package-btn:hover {
+            background: #764ba2;
+        }
+
+        @media (max-width: 600px) {
+            .progress-container {
+                padding: 20px;
+            }
+
+            .quiz-card {
+                padding: 25px;
+            }
+
+            .step-label {
+                font-size: 11px;
+            }
+
+            .packages-container {
+                grid-template-columns: 1fr;
+            }
+
+            .package.recommended {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Steps -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Profil</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Séjour</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Besoins</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Offres</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Profile -->
+        <div class="quiz-card active" data-step="1">
+            <h2>👤 Votre Profil</h2>
+            
+            <div class="question">
+                <label for="status">Quel est votre statut ?</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="student" name="status" value="student">
+                        <label for="student">Étudiant(e)</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="worker" name="status" value="worker">
+                        <label for="worker">Travailleur/Travailleuse</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="intern" name="status" value="intern">
+                        <label for="intern">Stagiaire</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question">
+                <label for="nationality">Quelle est votre nationalité ?</label>
+                <select id="nationality">
+                    <option value="">Sélectionnez...</option>
+                    <option value="eu">Union Européenne</option>
+                    <option value="non-eu">Hors Union Européenne</option>
+                </select>
+            </div>
+
+            <div class="question">
+                <label for="french-level">Quel est votre niveau de français ?</label>
+                <select id="french-level">
+                    <option value="">Sélectionnez...</option>
+                    <option value="beginner">Débutant (A1-A2)</option>
+                    <option value="intermediate">Intermédiaire (B1-B2)</option>
+                    <option value="advanced">Avancé (C1-C2)</option>
+                    <option value="native">Langue maternelle</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-back" onclick="goBack()" style="visibility: hidden;">← Retour</button>
+                <button class="btn btn-next" onclick="nextStep()">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Stay -->
+        <div class="quiz-card" data-step="2">
+            <h2>🗓️ Votre Séjour</h2>
+            
+            <div class="question">
+                <label for="duration">Quelle est la durée prévue de votre séjour ?</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="short" name="duration" value="short">
+                        <label for="short">Moins de 6 mois</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="medium" name="duration" value="medium">
+                        <label for="medium">6 mois à 1 an</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="long" name="duration" value="long">
+                        <label for="long">Plus d'1 an</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question">
+                <label for="arrival-date">Date d'arrivée prévue en France</label>
+                <input type="text" id="arrival-date" placeholder="Exemple: Septembre 2025">
+            </div>
+
+            <div class="question">
+                <label for="city">Dans quelle ville allez-vous résider ?</label>
+                <input type="text" id="city" placeholder="Exemple: Paris">
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-back" onclick="goBack()">← Retour</button>
+                <button class="btn btn-next" onclick="nextStep()">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Needs -->
+        <div class="quiz-card" data-step="3">
+            <h2>📝 Vos Besoins</h2>
+            
+            <div class="question">
+                <label for="accommodation">Avez-vous déjà un logement en France ?</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="accommodation-yes" name="accommodation" value="yes">
+                        <label for="accommodation-yes">Oui, c'est réglé</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="accommodation-searching" name="accommodation" value="searching">
+                        <label for="accommodation-searching">Non, je cherche encore</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="accommodation-help" name="accommodation" value="help">
+                        <label for="accommodation-help">Non, j'ai besoin d'aide</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question">
+                <label for="visa">Avez-vous besoin d'un visa ?</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="visa-no" name="visa" value="no">
+                        <label for="visa-no">Non, je n'en ai pas besoin</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="visa-progress" name="visa" value="progress">
+                        <label for="visa-progress">Oui, démarches en cours</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="visa-help" name="visa" value="help">
+                        <label for="visa-help">Oui, j'ai besoin d'aide</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question">
+                <label for="support">Quel type d'accompagnement recherchez-vous ?</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="support-minimal" name="support" value="minimal">
+                        <label for="support-minimal">Informations de base uniquement</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="support-medium" name="support" value="medium">
+                        <label for="support-medium">Accompagnement modéré</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="support-full" name="support" value="full">
+                        <label for="support-full">Accompagnement complet</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-back" onclick="goBack()">← Retour</button>
+                <button class="btn btn-next" onclick="nextStep()">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Packages -->
+        <div class="quiz-card" data-step="4">
+            <h2>🎯 Nos Offres Personnalisées</h2>
+            <p style="color: #666; margin-bottom: 20px;">Selon vos réponses, voici les formules qui vous correspondent :</p>
+            
+            <div class="packages-container">
+                <div class="package">
+                    <div class="package-icon">📄</div>
+                    <div class="package-name">Basic</div>
+                    <div class="package-price">Gratuit</div>
+                    <ul class="package-features">
+                        <li>Guide PDF complet</li>
+                        <li>Liste des démarches</li>
+                        <li>Contacts utiles</li>
+                        <li>FAQ en ligne</li>
+                    </ul>
+                    <button class="package-btn" onclick="selectPackage('basic')">Choisir</button>
+                </div>
+
+                <div class="package recommended">
+                    <div class="package-icon">⭐</div>
+                    <div class="package-name">Advanced</div>
+                    <div class="package-price">49€</div>
+                    <ul class="package-features">
+                        <li>Tout de Basic +</li>
+                        <li>Checklist personnalisée</li>
+                        <li>Suivi des démarches</li>
+                        <li>Support par email</li>
+                        <li>Modèles de documents</li>
+                    </ul>
+                    <button class="package-btn" onclick="selectPackage('advanced')">Choisir</button>
+                </div>
+
+                <div class="package">
+                    <div class="package-icon">👑</div>
+                    <div class="package-name">Pro</div>
+                    <div class="package-price">149€</div>
+                    <ul class="package-features">
+                        <li>Tout de Advanced +</li>
+                        <li>Accompagnement dédié</li>
+                        <li>Appels vidéo illimités</li>
+                        <li>Aide à la recherche logement</li>
+                        <li>Support administratif complet</li>
+                        <li>Garantie satisfaction</li>
+                    </ul>
+                    <button class="package-btn" onclick="selectPackage('pro')">Choisir</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-back" onclick="goBack()">← Retour</button>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+
+        function updateProgress() {
+            // Update step circles and labels
+            document.querySelectorAll('.step').forEach(step => {
+                const stepNum = parseInt(step.dataset.step);
+                step.classList.remove('active', 'completed');
+                
+                if (stepNum === currentStep) {
+                    step.classList.add('active');
+                } else if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                    step.querySelector('.step-circle').textContent = '✓';
+                } else {
+                    step.querySelector('.step-circle').textContent = stepNum;
+                }
+            });
+
+            // Update progress bar
+            const progress = ((currentStep - 1) / 3) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            // Show/hide cards
+            document.querySelectorAll('.quiz-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`.quiz-card[data-step="${currentStep}"]`).classList.add('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextStep() {
+            if (currentStep < 4) {
+                currentStep++;
+                updateProgress();
+            }
+        }
+
+        function goBack() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateProgress();
+            }
+        }
+
+        function selectPackage(packageType) {
+            if (packageType === 'advanced') {
+                window.location.href = 'dashboard.html';
+            } else {
+                alert(`Vous avez choisi la formule ${packageType.toUpperCase()}. Cette fonctionnalité sera bientôt disponible !`);
+            }
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
+

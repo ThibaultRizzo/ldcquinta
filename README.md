@@ -62,3 +62,40 @@ make help
 1. **index.html** → Bouton "Suivant" → **quiz.html**
 2. **quiz.html** (Étape 4) → Bouton "Advanced" → **dashboard.html**
 
+## 🌐 Deployment
+
+This project is configured for deployment to AWS with HTTPS support.
+
+### Live URL
+**https://student.luzqr.com** 🔒
+
+### Features
+- ✅ HTTPS/SSL encryption
+- ✅ CloudFront CDN
+- ✅ Automatic deployments via GitHub Actions
+- ✅ Custom domain
+
+### Setup Instructions
+
+See detailed deployment guide: [infrastructure/DEPLOYMENT.md](infrastructure/DEPLOYMENT.md)
+
+Quick start:
+```bash
+# 1. Run AWS setup
+chmod +x infrastructure/simple-setup.sh
+./infrastructure/simple-setup.sh
+
+# 2. Request SSL certificate (us-east-1 required)
+# 3. Create CloudFront distribution
+# 4. Update Route53 DNS
+# 5. Configure GitHub secrets
+# 6. Push to GitHub
+```
+
+### Manual Deployment
+```bash
+# Deploy manually to S3
+export CLOUDFRONT_DISTRIBUTION_ID="YOUR_ID"
+./infrastructure/deploy.sh
+```
+

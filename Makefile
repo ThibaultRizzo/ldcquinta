@@ -1,12 +1,19 @@
-.PHONY: open chrome dev dashboard help
+.PHONY: open chrome dev dashboard help setup-aws deploy
 
 # Default target
 help:
 	@echo "Available commands:"
+	@echo ""
+	@echo "Development:"
 	@echo "  make open      - Open index.html (landing page) in Google Chrome"
 	@echo "  make chrome    - Same as 'make open'"
 	@echo "  make dev       - Open in Chrome (alias)"
 	@echo "  make dashboard - Open dashboard.html (checklist) in Google Chrome"
+	@echo ""
+	@echo "Deployment:"
+	@echo "  make setup-aws - Run AWS infrastructure setup"
+	@echo "  make deploy    - Deploy to S3 (requires CLOUDFRONT_DISTRIBUTION_ID env var)"
+	@echo ""
 
 # Open in Chrome (default browser command)
 open: chrome
@@ -23,4 +30,14 @@ dev: chrome
 dashboard:
 	@echo "Opening dashboard in Google Chrome..."
 	@open -a "Google Chrome" dashboard.html
+
+# Setup AWS infrastructure
+setup-aws:
+	@echo "🚀 Setting up AWS infrastructure..."
+	@./infrastructure/simple-setup.sh
+
+# Deploy to AWS
+deploy:
+	@echo "📤 Deploying to AWS..."
+	@./infrastructure/deploy.sh
 

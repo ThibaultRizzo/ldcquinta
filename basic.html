@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOFH 🇫🇷</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='90'>🇫🇷</text></svg>" type="image/svg+xml">
+    <style>
+        /* ==================== VARIABLES ==================== */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f97316;
+            --light-bg: #f8f9fa;
+            --text-dark: #1a1a1a;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ==================== RESET ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background-color: #ffffff;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ==================== LANGUAGE SELECTOR ==================== */
+        .language-selector {
+            position: relative;
+            z-index: 200;
+        }
+
+        .language-toggle {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .language-toggle:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .language-buttons {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .language-buttons.active {
+            display: flex;
+        }
+
+        .lang-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ==================== STEP INDICATOR ==================== */
+        .step-indicator {
+            display: none;
+            padding: 12px 30px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            max-width: 350px;
+            margin: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            position: relative;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text-light);
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-number::after {
+            content: '✓';
+            font-size: 14px;
+        }
+
+        .step-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+        }
+
+        .step-connector {
+            position: absolute;
+            top: 16px;
+            left: -15px;
+            width: 30px;
+            height: 2px;
+            background: var(--border-color);
+        }
+
+        .step.completed .step-connector {
+            background: var(--primary-color);
+        }
+
+        .step:first-child .step-connector {
+            display: none;
+        }
+
+        /* ==================== HEADER ==================== */
+        .page-header {
+            padding: 12px 30px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            gap: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .package-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .package-title .subtitle {
+            font-size: 9px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .package-title .name {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-button {
+            padding: 6px 12px;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .back-button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* ==================== MAIN CONTENT ==================== */
+        main {
+            padding: 14px 24px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            gap: 12px;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 0.8fr 2.2fr;
+            gap: 14px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ==================== DESCRIPTION CARD ==================== */
+        .description-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            height: fit-content;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+        }
+
+        .description-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .description-content {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .description-content p {
+            margin-bottom: 6px;
+        }
+
+        .disclaimers {
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .disclaimer-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .disclaimer-item {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-bottom: 4px;
+            padding-left: 14px;
+            position: relative;
+        }
+
+        .disclaimer-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+        }
+
+        /* ==================== SERVICES GRID ==================== */
+        .services-container {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .services-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            auto-rows: 200px;
+            gap: 12px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* ==================== SERVICE CARD ==================== */
+        .service-card {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .service-card:hover,
+        .service-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .service-card:hover::before,
+        .service-card.selected::before {
+            transform: scaleX(1);
+        }
+
+        .service-checkbox {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 3px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 11px;
+            line-height: 1;
+        }
+
+        .service-card.selected .service-checkbox {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .service-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            padding-right: 20px;
+        }
+
+        .service-description {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            line-height: 1.5;
+            flex: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+
+        .service-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .service-price {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .service-time {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        /* ==================== FOOTER ==================== */
+        .page-footer {
+            margin-top: 0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 6px;
+            min-height: 0;
+        }
+
+        .recap-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .recap-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+
+        .recap-row:last-child {
+            margin-bottom: 0;
+            padding-top: 0;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .recap-label {
+            color: var(--text-light);
+        }
+
+        .recap-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            flex-shrink: 0;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .cta-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .cta-button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .cta-button.secondary {
+            background: white;
+            color: var(--text-light);
+            border: 2px solid var(--border-color);
+            font-size: 10px;
+            padding: 6px 12px;
+        }
+
+        .cta-button.secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .description-card {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 20px;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .package-title .name {
+                font-size: 22px;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .cta-button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                padding: 16px;
+            }
+
+            .package-title .name {
+                font-size: 18px;
+            }
+
+            main {
+                padding: 16px;
+            }
+
+            .description-card {
+                padding: 16px;
+            }
+
+            .services-container {
+                padding: 16px;
+            }
+
+            .back-button {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+        <div class="header-left">
+            <div class="logo">🇫🇷 HOFH</div>
+            <div class="package-title">
+                <div class="subtitle" data-i18n="packageLabel">Your Package</div>
+                <div class="name" data-i18n="basicName">Basic</div>
+            </div>
+        </div>
+        
+        <!-- STEP INDICATOR IN HEADER -->
+        <div class="steps">
+            <div class="step active" id="step1">
+                <div class="step-connector"></div>
+                <div class="step-number">1</div>
+                <div class="step-label" data-i18n="step1Label">Services</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-connector"></div>
+                <div class="step-number">2</div>
+                <div class="step-label" data-i18n="step2Label">Information</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-connector"></div>
+                <div class="step-number">3</div>
+                <div class="step-label" data-i18n="step3Label">Payment</div>
+            </div>
+        </div>
+
+        <!-- LANGUAGE SELECTOR IN HEADER -->
+        <div class="language-selector">
+            <button class="language-toggle" onclick="toggleLanguageMenu()" title="Select Language">🌐</button>
+            <div class="language-buttons" id="languageMenu">
+                <button class="lang-btn active" data-lang="en" onclick="changeLanguage('en')" title="English">🇬🇧</button>
+                <button class="lang-btn" data-lang="fr" onclick="changeLanguage('fr')" title="Français">🇫🇷</button>
+                <button class="lang-btn" data-lang="es" onclick="changeLanguage('es')" title="Español">🇪🇸</button>
+            </div>
+        </div>
+
+        <button class="back-button" onclick="goBack()" data-i18n="backButton">← Back</button>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <div class="content-wrapper">
+            <!-- DESCRIPTION CARD -->
+            <div class="description-card">
+                <div class="description-title" data-i18n="packageOverview">Package Overview</div>
+                <div class="description-content">
+                    <p data-i18n="basicPackageDesc">The Basic package gives you access to individual services à la carte. Perfect for independent travelers who want flexibility.</p>
+                </div>
+                <div class="disclaimers">
+                    <div class="disclaimer-title" data-i18n="disclaimers">Important</div>
+                    <div class="disclaimer-item" data-i18n="disclaimer1">Select only the services you need</div>
+                    <div class="disclaimer-item" data-i18n="disclaimer2">Prices vary by service</div>
+                    <div class="disclaimer-item" data-i18n="disclaimer3">Total time depends on selections</div>
+                </div>
+            </div>
+
+            <!-- SERVICES GRID -->
+            <div class="services-container">
+                <div class="services-title" data-i18n="selectServices">Select Your Services</div>
+                <div class="services-grid" id="servicesGrid">
+                    <!-- Services will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="page-footer">
+            <div class="recap-section">
+                <div class="recap-row">
+                    <span class="recap-label" data-i18n="totalPrice">Total Price</span>
+                    <span class="recap-value">€<span id="totalPrice">0</span></span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label" data-i18n="totalTime">Total Time</span>
+                    <span class="recap-value"><span id="totalTime">0</span> mins</span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label" data-i18n="estimatedFillTime">Est. Time to Complete</span>
+                    <span class="recap-value"><span id="fillTime">5</span> mins</span>
+                </div>
+            </div>
+            <div class="cta-buttons">
+                <button class="cta-button secondary" onclick="goBack()" data-i18n="backButton">← Back to Packages</button>
+                <button class="cta-button primary" id="continueBtn" onclick="continueToNext()" data-i18n="next">Continue →</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuration
+        const APP_CONFIG = {
+            title: 'Home Away From Home',
+            shortTitle: 'HOFH'
+        };
+
+        // Translation Dictionary
+        const translations = {
+            en: {
+                packageLabel: 'Your Package',
+                basicName: 'Basic',
+                backButton: '← Back',
+                packageOverview: 'Package Overview',
+                basicPackageDesc: 'The Basic package gives you access to individual services à la carte. Perfect for independent travelers who want flexibility.',
+                disclaimers: 'Important',
+                disclaimer1: 'Select only the services you need',
+                disclaimer2: 'Prices vary by service',
+                disclaimer3: 'Total time depends on selections',
+                selectServices: 'Select Your Services',
+                totalPrice: 'Total Price',
+                totalTime: 'Total Time',
+                estimatedFillTime: 'Est. Time to Complete',
+                next: 'Continue →',
+                step1Label: 'Services',
+                step2Label: 'Information',
+                step3Label: 'Payment'
+            },
+            fr: {
+                packageLabel: 'Votre Forfait',
+                basicName: 'Basique',
+                backButton: '← Retour',
+                packageOverview: 'Aperçu du Forfait',
+                basicPackageDesc: 'Le forfait Basique vous donne accès aux services individuels à la carte. Parfait pour les voyageurs indépendants qui veulent de la flexibilité.',
+                disclaimers: 'Important',
+                disclaimer1: 'Sélectionnez uniquement les services dont vous avez besoin',
+                disclaimer2: 'Les prix varient selon le service',
+                disclaimer3: 'Le temps total dépend des sélections',
+                selectServices: 'Sélectionnez Vos Services',
+                totalPrice: 'Prix Total',
+                totalTime: 'Temps Total',
+                estimatedFillTime: 'Temps Estimé pour Compléter',
+                next: 'Continuer →',
+                step1Label: 'Services',
+                step2Label: 'Information',
+                step3Label: 'Paiement'
+            },
+            es: {
+                packageLabel: 'Tu Paquete',
+                basicName: 'Básico',
+                backButton: '← Atrás',
+                packageOverview: 'Descripción del Paquete',
+                basicPackageDesc: 'El paquete Básico te da acceso a servicios individuales à la carte. Perfecto para viajeros independientes que quieren flexibilidad.',
+                disclaimers: 'Importante',
+                disclaimer1: 'Selecciona solo los servicios que necesitas',
+                disclaimer2: 'Los precios varían según el servicio',
+                disclaimer3: 'El tiempo total depende de las selecciones',
+                selectServices: 'Selecciona Tus Servicios',
+                totalPrice: 'Precio Total',
+                totalTime: 'Tiempo Total',
+                estimatedFillTime: 'Tiempo Estimado para Completar',
+                next: 'Continuar →',
+                step1Label: 'Servicios',
+                step2Label: 'Información',
+                step3Label: 'Pago'
+            }
+        };
+
+        // Services data
+        const services = {
+            en: [
+                { name: 'eSIM Setup Assistance', description: 'Help with purchasing and setting up your French eSIM card', price: 15, time: 20 },
+                { name: 'Internet Box Configuration', description: 'Guidance on choosing and installing your home internet', price: 20, time: 30 },
+                { name: 'Bank Account Opening', description: 'Assistance and tips for opening a French bank account', price: 25, time: 45 },
+                { name: 'Transport Card (Navigo)', description: 'Help getting your Navigo transport pass set up', price: 10, time: 15 },
+                { name: 'Insurance Information', description: 'Recommendations for health and home insurance options', price: 20, time: 25 },
+            ],
+            fr: [
+                { name: 'Assistance Configuration eSIM', description: 'Aide pour l\'achat et la configuration de votre carte eSIM française', price: 15, time: 20 },
+                { name: 'Configuration Box Internet', description: 'Guide pour choisir et installer votre internet maison', price: 20, time: 30 },
+                { name: 'Ouverture Compte Bancaire', description: 'Assistance et conseils pour ouvrir un compte bancaire français', price: 25, time: 45 },
+                { name: 'Carte de Transport (Navigo)', description: 'Aide pour configurer votre pass Navigo', price: 10, time: 15 },
+                { name: 'Informations Assurance', description: 'Recommandations pour les options d\'assurance santé et habitation', price: 20, time: 25 },
+            ],
+            es: [
+                { name: 'Asistencia de Configuración eSIM', description: 'Ayuda para comprar y configurar tu tarjeta eSIM francesa', price: 15, time: 20 },
+                { name: 'Configuración de Caja de Internet', description: 'Orientación sobre cómo elegir e instalar tu internet en casa', price: 20, time: 30 },
+                { name: 'Apertura de Cuenta Bancaria', description: 'Asistencia y consejos para abrir una cuenta bancaria francesa', price: 25, time: 45 },
+                { name: 'Tarjeta de Transporte (Navigo)', description: 'Ayuda para configurar tu pase Navigo', price: 10, time: 15 },
+                { name: 'Información de Seguros', description: 'Recomendaciones para opciones de seguros de salud y hogar', price: 20, time: 25 },
+            ]
+        };
+
+        // Get current language
+        let currentLanguage = localStorage.getItem('language') || 'en';
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function() {
+            changeLanguage(currentLanguage);
+            renderServices();
+            updateRecap();
+        });
+
+        function renderServices() {
+            const servicesGrid = document.getElementById('servicesGrid');
+            servicesGrid.innerHTML = '';
+            const currentServices = services[currentLanguage];
+
+            currentServices.forEach((service, index) => {
+                const card = document.createElement('div');
+                card.className = 'service-card selected';
+                card.dataset.index = index;
+                card.onclick = () => toggleService(index);
+
+                card.innerHTML = `
+                    <div class="service-checkbox">✓</div>
+                    <div class="service-name">${service.name}</div>
+                    <div class="service-description">${service.description}</div>
+                    <div class="service-meta">
+                        <span class="service-price">€${service.price}</span>
+                        <span class="service-time">${service.time} min</span>
+                    </div>
+                `;
+
+                servicesGrid.appendChild(card);
+            });
+        }
+
+        function toggleService(index) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            card.classList.toggle('selected');
+            updateRecap();
+        }
+
+        function updateRecap() {
+            const currentServices = services[currentLanguage];
+            let totalPrice = 0;
+            let totalTime = 0;
+            let selectedCount = 0;
+
+            document.querySelectorAll('.service-card').forEach((card, index) => {
+                if (card.classList.contains('selected')) {
+                    totalPrice += currentServices[index].price;
+                    totalTime += currentServices[index].time;
+                    selectedCount++;
+                }
+            });
+
+            // Estimate fill time based on selected services (5 min base + 2 min per service)
+            const estimatedFillTime = 5 + (selectedCount * 2);
+
+            document.getElementById('totalPrice').textContent = totalPrice;
+            document.getElementById('totalTime').textContent = totalTime;
+            document.getElementById('fillTime').textContent = estimatedFillTime;
+
+            // Hide continue button if nothing is selected
+            const continueBtn = document.getElementById('continueBtn');
+            if (selectedCount === 0) {
+                continueBtn.style.display = 'none';
+            } else {
+                continueBtn.style.display = 'inline-block';
+            }
+        }
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+
+            // Update language button styles
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update all translatable elements
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // Re-render services with new language
+            renderServices();
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function continueToNext() {
+            const selectedServices = [];
+            document.querySelectorAll('.service-card.selected').forEach((card, index) => {
+                selectedServices.push(index);
+            });
+            sessionStorage.setItem('selectedBasicServices', JSON.stringify(selectedServices));
+            // Redirect to information page
+            window.location.href = 'information.html';
+        }
+
+        function toggleLanguageMenu() {
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('active');
+        }
+
+        // Close language menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            if (!languageSelector.contains(event.target)) {
+                document.getElementById('languageMenu').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
+

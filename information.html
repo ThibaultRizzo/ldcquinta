@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOFH 🇫🇷</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='90'>🇫🇷</text></svg>" type="image/svg+xml">
+    <style>
+        /* ==================== VARIABLES ==================== */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f97316;
+            --light-bg: #f8f9fa;
+            --text-dark: #1a1a1a;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            --success-color: #10b981;
+            --error-color: #ef4444;
+        }
+
+        /* ==================== RESET ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background-color: #ffffff;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* ==================== LANGUAGE SELECTOR ==================== */
+        .language-selector {
+            position: relative;
+            z-index: 200;
+        }
+
+        .language-toggle {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .language-toggle:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .language-buttons {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .language-buttons.active {
+            display: flex;
+        }
+
+        .lang-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ==================== STEP INDICATOR ==================== */
+        .step-indicator {
+            padding: 12px 30px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            max-width: 350px;
+            margin: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            position: relative;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text-light);
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-number::after {
+            content: '✓';
+            font-size: 14px;
+        }
+
+        .step-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+        }
+
+        .step-connector {
+            position: absolute;
+            top: 16px;
+            left: -15px;
+            width: 30px;
+            height: 2px;
+            background: var(--border-color);
+        }
+
+        .step.completed .step-connector {
+            background: var(--primary-color);
+        }
+
+        .step:first-child .step-connector {
+            display: none;
+        }
+
+        /* ==================== HEADER ==================== */
+        .page-header {
+            padding: 12px 30px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            gap: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .package-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .package-title .subtitle {
+            font-size: 9px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .package-title .name {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-button {
+            padding: 6px 12px;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .back-button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* ==================== MAIN LAYOUT ==================== */
+        .page-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 0;
+        }
+
+        /* ==================== LEFT SIDEBAR - SERVICES LIST ==================== */
+        .services-sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .services-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .service-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .service-item:hover {
+            background: var(--light-bg);
+        }
+
+        .service-item.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+            border-left: 3px solid var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-left: 13px;
+        }
+
+        .service-item.completed::before {
+            content: '✓';
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--success-color);
+            position: absolute;
+            left: 6px;
+        }
+
+        .service-item.completed {
+            opacity: 0.7;
+        }
+
+        .service-item.completed .service-item-text {
+            color: var(--text-light);
+        }
+
+        .service-item-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .service-item-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .service-item-status {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* ==================== RIGHT SIDE - FORM ==================== */
+        .form-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .form-scrollable {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .form-section {
+            display: block;
+            margin-bottom: 40px;
+            padding-bottom: 40px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-icon {
+            font-size: 24px;
+        }
+
+        .form-description {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: var(--error-color);
+            margin-left: 4px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-help {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .form-group-inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-dark);
+            flex: 1;
+        }
+
+        /* ==================== FIXED FOOTER ==================== */
+        .page-footer {
+            background: white;
+            border-top: 1px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 100;
+        }
+
+        .footer-stats {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--light-bg);
+            border-radius: 2px;
+            overflow: hidden;
+            max-width: 200px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .cta-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .cta-button.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .cta-button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .cta-button.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cta-button.secondary {
+            background: white;
+            color: var(--text-light);
+            border: 2px solid var(--border-color);
+        }
+
+        .cta-button.secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1024px) {
+            .services-sidebar {
+                width: 240px;
+            }
+
+            .form-group-inline {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 20px;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .page-container {
+                flex-direction: column;
+            }
+
+            .services-sidebar {
+                width: 100%;
+                max-height: 150px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .services-list {
+                display: flex;
+                gap: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            .service-item {
+                border-bottom: none;
+                border-right: 1px solid var(--border-color);
+                flex-shrink: 0;
+                width: auto;
+                min-width: 120px;
+            }
+
+            .service-item.active {
+                border-left: none;
+                border-bottom: 3px solid var(--primary-color);
+            }
+
+            .footer-stats {
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            .page-footer {
+                flex-direction: column;
+                padding: 12px;
+            }
+
+            .footer-buttons {
+                width: 100%;
+            }
+
+            .cta-button {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                padding: 16px;
+            }
+
+            .form-scrollable {
+                padding: 16px;
+            }
+
+            .services-sidebar {
+                max-height: 120px;
+            }
+
+            .stat-value {
+                font-size: 12px;
+            }
+
+            .footer-stats {
+                gap: 12px;
+                font-size: 10px;
+            }
+        }
+
+        /* ==================== SCROLLBAR STYLING ==================== */
+        .services-list::-webkit-scrollbar,
+        .form-scrollable::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .services-list::-webkit-scrollbar-track,
+        .form-scrollable::-webkit-scrollbar-track {
+            background: var(--light-bg);
+        }
+
+        .services-list::-webkit-scrollbar-thumb,
+        .form-scrollable::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .services-list::-webkit-scrollbar-thumb:hover,
+        .form-scrollable::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+        <div class="header-left">
+            <div class="logo">🇫🇷 HOFH</div>
+            <div class="package-title">
+                <div class="subtitle" data-i18n="packageLabel">Your Package</div>
+                <div class="name" data-i18n="basicName">Basic</div>
+            </div>
+        </div>
+        
+        <!-- STEP INDICATOR IN HEADER -->
+        <div class="steps">
+            <div class="step completed" id="step1">
+                <div class="step-connector"></div>
+                <div class="step-number">1</div>
+                <div class="step-label" data-i18n="step1Label">Services</div>
+            </div>
+            <div class="step active" id="step2">
+                <div class="step-connector"></div>
+                <div class="step-number">2</div>
+                <div class="step-label" data-i18n="step2Label">Information</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-connector"></div>
+                <div class="step-number">3</div>
+                <div class="step-label" data-i18n="step3Label">Payment</div>
+            </div>
+        </div>
+
+        <!-- LANGUAGE SELECTOR IN HEADER -->
+        <div class="language-selector">
+            <button class="language-toggle" onclick="toggleLanguageMenu()" title="Select Language">🌐</button>
+            <div class="language-buttons" id="languageMenu">
+                <button class="lang-btn active" data-lang="en" onclick="changeLanguage('en')" title="English">🇬🇧</button>
+                <button class="lang-btn" data-lang="fr" onclick="changeLanguage('fr')" title="Français">🇫🇷</button>
+                <button class="lang-btn" data-lang="es" onclick="changeLanguage('es')" title="Español">🇪🇸</button>
+            </div>
+        </div>
+
+        <button class="back-button" onclick="goBack()" data-i18n="backButton">← Back</button>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="page-container">
+        <!-- LEFT SIDEBAR - SERVICES LIST -->
+        <div class="services-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title" data-i18n="selectedServices">Selected Services</div>
+                <div class="sidebar-subtitle"><span id="serviceCount">0</span> <span data-i18n="servicesSelected">services selected</span></div>
+            </div>
+            <div class="services-list" id="servicesList">
+                <!-- Services will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE - FORM -->
+        <div class="form-container">
+            <div class="form-scrollable" id="formScrollable">
+                <!-- Forms will be populated by JavaScript -->
+            </div>
+
+            <!-- FIXED FOOTER -->
+            <footer class="page-footer">
+                <div class="footer-stats">
+                    <div class="stat-item">
+                        <div class="stat-label" data-i18n="fieldsRemaining">Fields Remaining</div>
+                        <div class="stat-value"><span id="remainingFields">0</span> / <span id="totalFields">0</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label" data-i18n="estimatedTime">Estimated Time</div>
+                        <div class="stat-value"><span id="estimatedTime">0</span> min</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="footer-buttons">
+                    <button class="cta-button secondary" onclick="goToPreviousStep()" data-i18n="backButton">← Back</button>
+                    <button class="cta-button primary" id="continueBtn" onclick="goToPayment()" data-i18n="nextPayment">Continue to Payment →</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION & DATA ====================
+        const APP_CONFIG = {
+            title: 'Home Away From Home',
+            shortTitle: 'HOFH'
+        };
+
+        // Services configuration with their required fields
+        const serviceConfigs = {
+            en: [
+                {
+                    id: 'esim',
+                    name: 'eSIM Setup Assistance',
+                    icon: '📱',
+                    description: 'Help with purchasing and setting up your French eSIM card',
+                    estimatedTime: 20,
+                    fields: [
+                        { name: 'currentCarrier', label: 'Current Mobile Carrier', type: 'text', required: true, placeholder: 'e.g., T-Mobile, Vodafone' },
+                        { name: 'esimCompatible', label: 'Is your phone eSIM compatible?', type: 'select', required: true, options: ['Select...', 'Yes', 'No', 'Not sure'] },
+                        { name: 'preferredPlan', label: 'Preferred Data Plan', type: 'select', required: true, options: ['Select...', '10GB', '20GB', '50GB', 'Unlimited'] },
+                        { name: 'notes', label: 'Additional Notes', type: 'textarea', required: false, placeholder: 'Any specific requirements or concerns?' }
+                    ]
+                },
+                {
+                    id: 'internet',
+                    name: 'Internet Box Configuration',
+                    icon: '📡',
+                    description: 'Guidance on choosing and installing your home internet',
+                    estimatedTime: 30,
+                    fields: [
+                        { name: 'livingArea', label: 'Living Area (m²)', type: 'text', required: true, placeholder: 'e.g., 45' },
+                        { name: 'internetUsage', label: 'Internet Usage Level', type: 'select', required: true, options: ['Select...', 'Light (browsing, email)', 'Moderate (streaming, work)', 'Heavy (gaming, 4K)'] },
+                        { name: 'providers', label: 'Interested Providers', type: 'checkbox', required: false, options: ['Orange', 'Free', 'Bouygues', 'SFR'] },
+                        { name: 'installationDate', label: 'Preferred Installation Date', type: 'text', required: false, placeholder: 'dd/mm/yyyy' },
+                        { name: 'notes', label: 'Special Requirements', type: 'textarea', required: false, placeholder: 'e.g., fiber availability, current provider' }
+                    ]
+                },
+                {
+                    id: 'bank',
+                    name: 'Bank Account Opening',
+                    icon: '🏦',
+                    description: 'Assistance and tips for opening a French bank account',
+                    estimatedTime: 45,
+                    fields: [
+                        { name: 'fullName', label: 'Full Name', type: 'text', required: true, placeholder: 'Your full legal name' },
+                        { name: 'accountType', label: 'Account Type', type: 'select', required: true, options: ['Select...', 'Current Account', 'Youth Account', 'Student Account'] },
+                        { name: 'residencyStatus', label: 'Residency Status', type: 'select', required: true, options: ['Select...', 'Permanent Resident', 'Work Permit Holder', 'Student Visa', 'Long-term Visitor'] },
+                        { name: 'documents', label: 'Documents Available', type: 'checkbox', required: true, options: ['Passport/ID', 'Proof of Address', 'Employment Contract', 'Proof of Income'] },
+                        { name: 'preferredBank', label: 'Bank Preference', type: 'select', required: false, options: ['Select...', 'BNP Paribas', 'Crédit Agricole', 'Société Générale', 'No preference'] },
+                        { name: 'notes', label: 'Questions or Concerns', type: 'textarea', required: false, placeholder: 'What would you like to know?' }
+                    ]
+                },
+                {
+                    id: 'transport',
+                    name: 'Transport Card (Navigo)',
+                    icon: '🚇',
+                    description: 'Help getting your Navigo transport pass set up',
+                    estimatedTime: 15,
+                    fields: [
+                        { name: 'city', label: 'City/Region', type: 'select', required: true, options: ['Select...', 'Île-de-France (Paris)', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Other'] },
+                        { name: 'travelFrequency', label: 'Travel Frequency', type: 'select', required: true, options: ['Select...', 'Daily', '3-4 times/week', '1-2 times/week', 'Occasionally'] },
+                        { name: 'cardType', label: 'Card Type Preference', type: 'select', required: true, options: ['Select...', 'Navigo Easy (pay-as-you-go)', 'Navigo Découverte (monthly)', 'Not sure'] },
+                        { name: 'notes', label: 'Additional Questions', type: 'textarea', required: false, placeholder: 'Any specific routes or concerns?' }
+                    ]
+                },
+                {
+                    id: 'insurance',
+                    name: 'Insurance Information',
+                    icon: '🛡️',
+                    description: 'Recommendations for health and home insurance options',
+                    estimatedTime: 25,
+                    fields: [
+                        { name: 'insuranceTypes', label: 'Insurance Types Needed', type: 'checkbox', required: true, options: ['Health', 'Home', 'Contents', 'Liability'] },
+                        { name: 'currentInsurance', label: 'Have Current Insurance?', type: 'select', required: true, options: ['Select...', 'Yes', 'No', 'Partially'] },
+                        { name: 'budget', label: 'Monthly Budget Range', type: 'select', required: false, options: ['Select...', 'Under €50', '€50-100', '€100-200', 'Over €200'] },
+                        { name: 'familyStatus', label: 'Family Status', type: 'select', required: false, options: ['Select...', 'Single', 'Couple', 'Family with children'] },
+                        { name: 'notes', label: 'Specific Requirements', type: 'textarea', required: false, placeholder: 'Any special circumstances or needs?' }
+                    ]
+                }
+            ],
+            fr: [
+                {
+                    id: 'esim',
+                    name: 'Assistance Configuration eSIM',
+                    icon: '📱',
+                    description: 'Aide pour l\'achat et la configuration de votre carte eSIM française',
+                    estimatedTime: 20,
+                    fields: [
+                        { name: 'currentCarrier', label: 'Opérateur Mobile Actuel', type: 'text', required: true, placeholder: 'ex: Orange, SFR' },
+                        { name: 'esimCompatible', label: 'Votre téléphone est-il compatible eSIM?', type: 'select', required: true, options: ['Sélectionner...', 'Oui', 'Non', 'Pas sûr'] },
+                        { name: 'preferredPlan', label: 'Plan de Données Préféré', type: 'select', required: true, options: ['Sélectionner...', '10GB', '20GB', '50GB', 'Illimité'] },
+                        { name: 'notes', label: 'Notes Supplémentaires', type: 'textarea', required: false, placeholder: 'Des exigences spécifiques?' }
+                    ]
+                },
+                {
+                    id: 'internet',
+                    name: 'Configuration Box Internet',
+                    icon: '📡',
+                    description: 'Guide pour choisir et installer votre internet maison',
+                    estimatedTime: 30,
+                    fields: [
+                        { name: 'livingArea', label: 'Surface du Logement (m²)', type: 'text', required: true, placeholder: 'ex: 45' },
+                        { name: 'internetUsage', label: 'Niveau d\'Utilisation Internet', type: 'select', required: true, options: ['Sélectionner...', 'Léger (navigation, email)', 'Modéré (streaming, travail)', 'Élevé (jeux, 4K)'] },
+                        { name: 'providers', label: 'Fournisseurs Intéressés', type: 'checkbox', required: false, options: ['Orange', 'Free', 'Bouygues', 'SFR'] },
+                        { name: 'installationDate', label: 'Date d\'Installation Préférée', type: 'text', required: false, placeholder: 'jj/mm/aaaa' },
+                        { name: 'notes', label: 'Exigences Spéciales', type: 'textarea', required: false, placeholder: 'ex: disponibilité fibre, fournisseur actuel' }
+                    ]
+                },
+                {
+                    id: 'bank',
+                    name: 'Ouverture Compte Bancaire',
+                    icon: '🏦',
+                    description: 'Assistance et conseils pour ouvrir un compte bancaire français',
+                    estimatedTime: 45,
+                    fields: [
+                        { name: 'fullName', label: 'Nom Complet', type: 'text', required: true, placeholder: 'Votre nom complet légal' },
+                        { name: 'accountType', label: 'Type de Compte', type: 'select', required: true, options: ['Sélectionner...', 'Compte Chèques', 'Compte Jeune', 'Compte Étudiant'] },
+                        { name: 'residencyStatus', label: 'Statut de Résidence', type: 'select', required: true, options: ['Sélectionner...', 'Résident Permanent', 'Titre de Travail', 'Visa Étudiant', 'Visiteur Long Terme'] },
+                        { name: 'documents', label: 'Documents Disponibles', type: 'checkbox', required: true, options: ['Passeport/ID', 'Justificatif de Domicile', 'Contrat de Travail', 'Justificatif de Revenus'] },
+                        { name: 'preferredBank', label: 'Préférence Bancaire', type: 'select', required: false, options: ['Sélectionner...', 'BNP Paribas', 'Crédit Agricole', 'Société Générale', 'Pas de préférence'] },
+                        { name: 'notes', label: 'Questions ou Préoccupations', type: 'textarea', required: false, placeholder: 'Qu\'aimeriez-vous savoir?' }
+                    ]
+                },
+                {
+                    id: 'transport',
+                    name: 'Carte de Transport (Navigo)',
+                    icon: '🚇',
+                    description: 'Aide pour configurer votre pass Navigo',
+                    estimatedTime: 15,
+                    fields: [
+                        { name: 'city', label: 'Ville/Région', type: 'select', required: true, options: ['Sélectionner...', 'Île-de-France (Paris)', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Autre'] },
+                        { name: 'travelFrequency', label: 'Fréquence de Déplacements', type: 'select', required: true, options: ['Sélectionner...', 'Quotidien', '3-4 fois/semaine', '1-2 fois/semaine', 'Occasionnel'] },
+                        { name: 'cardType', label: 'Préférence de Carte', type: 'select', required: true, options: ['Sélectionner...', 'Navigo Easy (au trajet)', 'Navigo Découverte (mensuel)', 'Pas sûr'] },
+                        { name: 'notes', label: 'Questions Supplémentaires', type: 'textarea', required: false, placeholder: 'Des trajets spécifiques ou préoccupations?' }
+                    ]
+                },
+                {
+                    id: 'insurance',
+                    name: 'Informations Assurance',
+                    icon: '🛡️',
+                    description: 'Recommandations pour les options d\'assurance santé et habitation',
+                    estimatedTime: 25,
+                    fields: [
+                        { name: 'insuranceTypes', label: 'Types d\'Assurance Nécessaires', type: 'checkbox', required: true, options: ['Santé', 'Habitation', 'Contenu', 'Responsabilité'] },
+                        { name: 'currentInsurance', label: 'Avez-vous une Assurance Actuelle?', type: 'select', required: true, options: ['Sélectionner...', 'Oui', 'Non', 'Partiellement'] },
+                        { name: 'budget', label: 'Fourchette de Budget Mensuel', type: 'select', required: false, options: ['Sélectionner...', 'Moins de €50', '€50-100', '€100-200', 'Plus de €200'] },
+                        { name: 'familyStatus', label: 'Situation Familiale', type: 'select', required: false, options: ['Sélectionner...', 'Célibataire', 'Couple', 'Famille avec enfants'] },
+                        { name: 'notes', label: 'Exigences Spécifiques', type: 'textarea', required: false, placeholder: 'Des circonstances particulières ou besoins?' }
+                    ]
+                }
+            ],
+            es: [
+                {
+                    id: 'esim',
+                    name: 'Asistencia de Configuración eSIM',
+                    icon: '📱',
+                    description: 'Ayuda para comprar y configurar tu tarjeta eSIM francesa',
+                    estimatedTime: 20,
+                    fields: [
+                        { name: 'currentCarrier', label: 'Operador Móvil Actual', type: 'text', required: true, placeholder: 'ej: Vodafone, Orange' },
+                        { name: 'esimCompatible', label: '¿Tu teléfono es compatible con eSIM?', type: 'select', required: true, options: ['Seleccionar...', 'Sí', 'No', 'No estoy seguro'] },
+                        { name: 'preferredPlan', label: 'Plan de Datos Preferido', type: 'select', required: true, options: ['Seleccionar...', '10GB', '20GB', '50GB', 'Ilimitado'] },
+                        { name: 'notes', label: 'Notas Adicionales', type: 'textarea', required: false, placeholder: '¿Algún requisito específico?' }
+                    ]
+                },
+                {
+                    id: 'internet',
+                    name: 'Configuración de Caja de Internet',
+                    icon: '📡',
+                    description: 'Orientación sobre cómo elegir e instalar tu internet en casa',
+                    estimatedTime: 30,
+                    fields: [
+                        { name: 'livingArea', label: 'Área del Hogar (m²)', type: 'text', required: true, placeholder: 'ej: 45' },
+                        { name: 'internetUsage', label: 'Nivel de Uso de Internet', type: 'select', required: true, options: ['Seleccionar...', 'Ligero (navegación, correo)', 'Moderado (streaming, trabajo)', 'Alto (juegos, 4K)'] },
+                        { name: 'providers', label: 'Proveedores de Interés', type: 'checkbox', required: false, options: ['Orange', 'Free', 'Bouygues', 'SFR'] },
+                        { name: 'installationDate', label: 'Fecha de Instalación Preferida', type: 'text', required: false, placeholder: 'dd/mm/aaaa' },
+                        { name: 'notes', label: 'Requisitos Especiales', type: 'textarea', required: false, placeholder: 'ej: disponibilidad de fibra, proveedor actual' }
+                    ]
+                },
+                {
+                    id: 'bank',
+                    name: 'Apertura de Cuenta Bancaria',
+                    icon: '🏦',
+                    description: 'Asistencia y consejos para abrir una cuenta bancaria francesa',
+                    estimatedTime: 45,
+                    fields: [
+                        { name: 'fullName', label: 'Nombre Completo', type: 'text', required: true, placeholder: 'Tu nombre completo legal' },
+                        { name: 'accountType', label: 'Tipo de Cuenta', type: 'select', required: true, options: ['Seleccionar...', 'Cuenta Corriente', 'Cuenta Joven', 'Cuenta de Estudiante'] },
+                        { name: 'residencyStatus', label: 'Estado de Residencia', type: 'select', required: true, options: ['Seleccionar...', 'Residente Permanente', 'Permiso de Trabajo', 'Visa de Estudiante', 'Visitante Largo Plazo'] },
+                        { name: 'documents', label: 'Documentos Disponibles', type: 'checkbox', required: true, options: ['Pasaporte/ID', 'Comprobante de Domicilio', 'Contrato de Trabajo', 'Comprobante de Ingresos'] },
+                        { name: 'preferredBank', label: 'Preferencia Bancaria', type: 'select', required: false, options: ['Seleccionar...', 'BNP Paribas', 'Crédit Agricole', 'Société Générale', 'Sin preferencia'] },
+                        { name: 'notes', label: 'Preguntas o Preocupaciones', type: 'textarea', required: false, placeholder: '¿Qué te gustaría saber?' }
+                    ]
+                },
+                {
+                    id: 'transport',
+                    name: 'Tarjeta de Transporte (Navigo)',
+                    icon: '🚇',
+                    description: 'Ayuda para configurar tu pase Navigo',
+                    estimatedTime: 15,
+                    fields: [
+                        { name: 'city', label: 'Ciudad/Región', type: 'select', required: true, options: ['Seleccionar...', 'Île-de-France (París)', 'Lyon', 'Marsella', 'Toulouse', 'Niza', 'Otro'] },
+                        { name: 'travelFrequency', label: 'Frecuencia de Viaje', type: 'select', required: true, options: ['Seleccionar...', 'Diario', '3-4 veces/semana', '1-2 veces/semana', 'Ocasionalmente'] },
+                        { name: 'cardType', label: 'Preferencia de Tarjeta', type: 'select', required: true, options: ['Seleccionar...', 'Navigo Easy (pago por uso)', 'Navigo Découverte (mensual)', 'No estoy seguro'] },
+                        { name: 'notes', label: 'Preguntas Adicionales', type: 'textarea', required: false, placeholder: '¿Rutas específicas o preocupaciones?' }
+                    ]
+                },
+                {
+                    id: 'insurance',
+                    name: 'Información de Seguros',
+                    icon: '🛡️',
+                    description: 'Recomendaciones para opciones de seguros de salud y hogar',
+                    estimatedTime: 25,
+                    fields: [
+                        { name: 'insuranceTypes', label: 'Tipos de Seguros Necesarios', type: 'checkbox', required: true, options: ['Salud', 'Hogar', 'Contenido', 'Responsabilidad'] },
+                        { name: 'currentInsurance', label: '¿Tienes Seguro Actual?', type: 'select', required: true, options: ['Seleccionar...', 'Sí', 'No', 'Parcialmente'] },
+                        { name: 'budget', label: 'Rango de Presupuesto Mensual', type: 'select', required: false, options: ['Seleccionar...', 'Menos de €50', '€50-100', '€100-200', 'Más de €200'] },
+                        { name: 'familyStatus', label: 'Estado Familiar', type: 'select', required: false, options: ['Seleccionar...', 'Soltero', 'Pareja', 'Familia con hijos'] },
+                        { name: 'notes', label: 'Requisitos Específicos', type: 'textarea', required: false, placeholder: '¿Circunstancias especiales o necesidades?' }
+                    ]
+                }
+            ]
+        };
+
+        // Translations
+        const translations = {
+            en: {
+                packageLabel: 'Your Package',
+                basicName: 'Basic',
+                backButton: '← Back',
+                step1Label: 'Services',
+                step2Label: 'Information',
+                step3Label: 'Payment',
+                selectedServices: 'Selected Services',
+                servicesSelected: 'services selected',
+                fieldsRemaining: 'Fields Remaining',
+                estimatedTime: 'Estimated Time',
+                nextPayment: 'Continue to Payment →',
+            },
+            fr: {
+                packageLabel: 'Votre Forfait',
+                basicName: 'Basique',
+                backButton: '← Retour',
+                step1Label: 'Services',
+                step2Label: 'Information',
+                step3Label: 'Paiement',
+                selectedServices: 'Services Sélectionnés',
+                servicesSelected: 'services sélectionnés',
+                fieldsRemaining: 'Champs Restants',
+                estimatedTime: 'Temps Estimé',
+                nextPayment: 'Continuer vers le Paiement →',
+            },
+            es: {
+                packageLabel: 'Tu Paquete',
+                basicName: 'Básico',
+                backButton: '← Atrás',
+                step1Label: 'Servicios',
+                step2Label: 'Información',
+                step3Label: 'Pago',
+                selectedServices: 'Servicios Seleccionados',
+                servicesSelected: 'servicios seleccionados',
+                fieldsRemaining: 'Campos Restantes',
+                estimatedTime: 'Tiempo Estimado',
+                nextPayment: 'Continuar al Pago →',
+            }
+        };
+
+        // ==================== STATE MANAGEMENT ====================
+        let currentLanguage = localStorage.getItem('language') || 'en';
+        let selectedServices = [];
+        let currentServiceIndex = 0;
+        let formData = {};
+
+        // ==================== INITIALIZATION ====================
+        window.addEventListener('DOMContentLoaded', function() {
+            loadSelectedServices();
+            changeLanguage(currentLanguage);
+            renderServicesList();
+            renderForms();
+            updateProgress();
+            setupScrollListener();
+            updateActiveServiceOnScroll();
+        });
+
+        function loadSelectedServices() {
+            const saved = sessionStorage.getItem('selectedBasicServices');
+            if (saved) {
+                const indices = JSON.parse(saved);
+                const services = serviceConfigs[currentLanguage];
+                selectedServices = indices.map(i => services[i]);
+            }
+            document.getElementById('serviceCount').textContent = selectedServices.length;
+        }
+
+        function renderServicesList() {
+            const list = document.getElementById('servicesList');
+            list.innerHTML = '';
+
+            selectedServices.forEach((service, index) => {
+                const item = document.createElement('div');
+                item.className = 'service-item' + (index === 0 ? ' active' : '');
+                item.id = `service-item-${index}`;
+                item.onclick = () => scrollToService(index);
+
+                item.innerHTML = `
+                    <div class="service-item-text">
+                        <div class="service-item-name">${service.icon} ${service.name}</div>
+                        <div class="service-item-status" data-i18n-key="service-status">${service.estimatedTime} min</div>
+                    </div>
+                `;
+
+                list.appendChild(item);
+            });
+        }
+
+        function renderForms() {
+            const container = document.getElementById('formScrollable');
+            container.innerHTML = '';
+
+            selectedServices.forEach((service, index) => {
+                const section = document.createElement('div');
+                section.className = 'form-section';
+                section.id = `form-section-${index}`;
+                section.dataset.serviceIndex = index;
+
+                let fieldsHTML = `
+                    <div class="form-title">
+                        <span class="form-icon">${service.icon}</span>
+                        <span>${service.name}</span>
+                    </div>
+                    <div class="form-description">${service.description}</div>
+                `;
+
+                service.fields.forEach(field => {
+                    fieldsHTML += renderField(service.id, field);
+                });
+
+                section.innerHTML = fieldsHTML;
+                container.appendChild(section);
+            });
+        }
+
+        function renderField(serviceId, field) {
+            const fieldId = `${serviceId}-${field.name}`;
+            const isRequired = field.required ? ' required' : '';
+
+            if (field.type === 'text' || field.type === 'email') {
+                return `
+                    <div class="form-group">
+                        <label class="form-label${field.required ? ' required' : ''}">${field.label}</label>
+                        <input 
+                            type="${field.type}" 
+                            class="form-input" 
+                            id="${fieldId}" 
+                            placeholder="${field.placeholder || ''}"
+                            data-field-id="${fieldId}"
+                            data-service="${serviceId}"
+                            ${isRequired}
+                            onchange="updateFormData('${fieldId}')"
+                        >
+                    </div>
+                `;
+            } else if (field.type === 'select') {
+                const options = field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+                return `
+                    <div class="form-group">
+                        <label class="form-label${field.required ? ' required' : ''}">${field.label}</label>
+                        <select 
+                            class="form-select" 
+                            id="${fieldId}"
+                            data-field-id="${fieldId}"
+                            data-service="${serviceId}"
+                            ${isRequired}
+                            onchange="updateFormData('${fieldId}')"
+                        >
+                            ${options}
+                        </select>
+                    </div>
+                `;
+            } else if (field.type === 'textarea') {
+                return `
+                    <div class="form-group">
+                        <label class="form-label${field.required ? ' required' : ''}">${field.label}</label>
+                        <textarea 
+                            class="form-textarea" 
+                            id="${fieldId}"
+                            placeholder="${field.placeholder || ''}"
+                            data-field-id="${fieldId}"
+                            data-service="${serviceId}"
+                            ${isRequired}
+                            onchange="updateFormData('${fieldId}')"
+                        ></textarea>
+                    </div>
+                `;
+            } else if (field.type === 'checkbox') {
+                const options = field.options.map(opt => `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="${fieldId}-${opt}" name="${fieldId}" value="${opt}">
+                        <label for="${fieldId}-${opt}">${opt}</label>
+                    </div>
+                `).join('');
+                return `
+                    <div class="form-group">
+                        <label class="form-label${field.required ? ' required' : ''}">${field.label}</label>
+                        <div class="checkbox-group" data-field-id="${fieldId}" data-service="${serviceId}">
+                            ${options}
+                        </div>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function scrollToService(index) {
+            const section = document.getElementById(`form-section-${index}`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function updateActiveServiceOnScroll() {
+            const container = document.getElementById('formScrollable');
+            const sections = document.querySelectorAll('.form-section');
+            
+            let activeIndex = 0;
+            let minDistance = Infinity;
+
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                
+                // Calculate distance from top of viewport
+                const distance = Math.abs(rect.top - containerRect.top);
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    activeIndex = index;
+                }
+            });
+
+            // Update sidebar highlight
+            document.querySelectorAll('.service-item').forEach((item, i) => {
+                item.classList.toggle('active', i === activeIndex);
+            });
+
+            currentServiceIndex = activeIndex;
+        }
+
+        function updateFormData(fieldId) {
+            const element = document.getElementById(fieldId);
+            if (!element) return;
+
+            const serviceId = element.dataset.service;
+            const fieldName = fieldId.split('-').slice(1).join('-');
+
+            if (!formData[serviceId]) {
+                formData[serviceId] = {};
+            }
+
+            if (element.type === 'checkbox') {
+                const checkboxes = document.querySelectorAll(`input[name="${fieldId}"]`);
+                const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+                formData[serviceId][fieldName] = selected;
+            } else {
+                formData[serviceId][fieldName] = element.value;
+            }
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            let totalFields = 0;
+            let filledFields = 0;
+            let totalEstimatedTime = 0;
+
+            selectedServices.forEach(service => {
+                totalFields += service.fields.length;
+                totalEstimatedTime += service.estimatedTime;
+
+                service.fields.forEach(field => {
+                    const fieldId = `${service.id}-${field.name}`;
+                    const element = document.getElementById(fieldId);
+
+                    if (element) {
+                        let isFilledAndValid = false;
+
+                        if (field.type === 'checkbox') {
+                            const checkboxes = document.querySelectorAll(`input[name="${fieldId}"]`);
+                            const selected = Array.from(checkboxes).filter(cb => cb.checked);
+                            isFilledAndValid = selected.length > 0 || !field.required;
+                            if (selected.length > 0) filledFields++;
+                        } else {
+                            const value = element.value;
+                            isFilledAndValid = value && value !== 'Sélectionner...' && value !== 'Select...';
+                            if (isFilledAndValid) filledFields++;
+                        }
+                    }
+                });
+            });
+
+            const remainingFields = totalFields - filledFields;
+            const progressPercent = (filledFields / totalFields) * 100;
+
+            document.getElementById('totalFields').textContent = totalFields;
+            document.getElementById('remainingFields').textContent = remainingFields;
+            document.getElementById('estimatedTime').textContent = totalEstimatedTime;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+
+            // Update sidebar with filled status
+            updateSidebarStatus();
+        }
+
+        function updateSidebarStatus() {
+            selectedServices.forEach((service, index) => {
+                const item = document.querySelectorAll('.service-item')[index];
+                if (!item) return;
+
+                let allFieldsFilled = true;
+                service.fields.forEach(field => {
+                    const fieldId = `${service.id}-${field.name}`;
+                    const element = document.getElementById(fieldId);
+
+                    if (element && field.required) {
+                        if (field.type === 'checkbox') {
+                            const checkboxes = document.querySelectorAll(`input[name="${fieldId}"]`);
+                            const selected = Array.from(checkboxes).filter(cb => cb.checked);
+                            if (selected.length === 0) allFieldsFilled = false;
+                        } else {
+                            const value = element.value;
+                            if (!value || value === 'Sélectionner...' || value === 'Select...') {
+                                allFieldsFilled = false;
+                            }
+                        }
+                    }
+                });
+
+                if (allFieldsFilled) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+        }
+
+        function setupScrollListener() {
+            const container = document.getElementById('formScrollable');
+            let scrollTimeout;
+            
+            container.addEventListener('scroll', function() {
+                // Debounce scroll event for better performance
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    updateActiveServiceOnScroll();
+                }, 50);
+            });
+        }
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+
+            // Update language button styles
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update all translatable elements
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // Reload with new language
+            loadSelectedServices();
+            renderServicesList();
+            renderForms();
+            updateProgress();
+            setupScrollListener();
+            updateActiveServiceOnScroll();
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function goToPreviousStep() {
+            window.location.href = 'basic.html';
+        }
+
+        function goToPayment() {
+            // Save form data to session storage
+            sessionStorage.setItem('serviceFormData', JSON.stringify(formData));
+            // Redirect to payment page
+            window.location.href = 'payment.html';
+        }
+
+        function toggleLanguageMenu() {
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('active');
+        }
+
+        // Close language menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            if (!languageSelector.contains(event.target)) {
+                document.getElementById('languageMenu').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
+

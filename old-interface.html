@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue en France - LDC Quinta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .description {
+            color: #555;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .quiz-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .quiz-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .quiz-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-info li {
+            color: #555;
+            padding: 8px 0;
+            font-size: 16px;
+        }
+
+        .quiz-info li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+        }
+
+        .back-button {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .back-button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .cta-button {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🇫🇷</div>
+        <h1>Bienvenue en France !</h1>
+        <p class="subtitle">Votre assistant personnel pour votre installation en France</p>
+        
+        <div class="description">
+            <p>Vous êtes étudiant ou travailleur étranger et vous préparez votre arrivée en France ? 
+            Notre plateforme est conçue pour vous accompagner dans toutes vos démarches administratives 
+            et pratiques.</p>
+            <br>
+            <p>Commencez par répondre à notre questionnaire personnalisé pour découvrir quelle formule 
+            d'accompagnement correspond le mieux à votre situation et à vos besoins.</p>
+        </div>
+
+        <div class="quiz-info">
+            <h3>📋 À propos du questionnaire :</h3>
+            <ul>
+                <li>4 étapes simples et rapides</li>
+                <li>Durée estimée : 2-3 minutes</li>
+                <li>12 questions personnalisées</li>
+                <li>Recommandations adaptées à votre profil</li>
+            </ul>
+        </div>
+
+        <button class="cta-button" onclick="window.location.href='quiz.html'">
+            Suivant →
+        </button>
+        <button class="cta-button back-button" onclick="window.location.href='index.html'">
+            ← New Interface
+        </button>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOFH 🇫🇷</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='90'>🇫🇷</text></svg>" type="image/svg+xml">
+    <style>
+        /* ==================== VARIABLES ==================== */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f97316;
+            --light-bg: #f8f9fa;
+            --text-dark: #1a1a1a;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ==================== RESET ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow: hidden;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background-image: url('landing_background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* ==================== BACKGROUND OVERLAY ==================== */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            /* backdrop-filter: brightness(0.85); */
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ==================== LOGO ==================== */
+        .logo {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo-svg {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: none;
+        }
+
+        /* ==================== SOCIAL MEDIA LINKS ==================== */
+        .social-links {
+            position: fixed;
+            left: 20px;
+            bottom: 40px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .social-link:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+            color: white;
+        }
+
+        /* ==================== LANGUAGE SELECTOR ==================== */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+        }
+
+        .language-toggle {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .language-toggle:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+        }
+
+        .language-buttons {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            z-index: 300;
+            overflow: hidden;
+        }
+
+        .language-buttons.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .language-btn {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: right;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .language-btn:hover {
+            background: var(--light-bg);
+        }
+
+        .language-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* ==================== MAIN CONTAINER ==================== */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            /* padding: 80px 40px 100px; */
+            gap: 20px;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.95);
+            margin: 0;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            line-height: 1.1;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            opacity: 0.95;
+            line-height: 1.7;
+            max-width: 600px;
+        }
+
+        /* ==================== PACKAGES SECTION ==================== */
+        .packages-section {
+            background: #ffffff12;
+            z-index: 20;
+            width: 80%;
+            margin: 0 auto;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            padding: 80px 40px 20px;
+            height: 50px;
+            transition: height 0.5s ease, background-color 0.5s ease;
+        }
+
+        .packages-section.expanded {
+            height: 300px;
+            background-color: #ffffffb3;
+        }
+
+        .packages-container {
+            display: flex;
+            gap: 10%;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 0 auto;
+            position: absolute;
+            left: 0;
+            transform: translateY(-200px);
+            transition: transform 0.5s ease;
+            margin: 0 50px;
+        }
+        
+
+        /* ==================== PACKAGE CARD ==================== */
+        .package-card {
+            aspect-ratio: 1 / 1;
+            width: 20%;
+            background: #ffffff99;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: space-between;
+        }
+
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .package-card:hover,
+        .package-card.active {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-6px);
+        }
+
+        .package-card:hover::before,
+        .package-card.active::before {
+            transform: scaleX(1);
+        }
+
+        .package-header {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .package-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .package-price {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .package-time {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .package-description {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* ==================== DETAILS SECTION ==================== */
+        .details-section {
+            display: none;
+            margin-top: 0;
+            padding: 0;
+            background: transparent;
+            border-radius: 0;
+            animation: slideIn 0.3s ease;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .details-section.active {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 10px 0;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .details-content {
+            flex: 1;
+        }
+
+        .detail-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .detail-description {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .detail-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-list li {
+            font-size: 12px;
+            color: var(--text-light);
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .detail-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .detail-cta-button {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            margin-top: 0;
+        }
+
+        .detail-cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 20px 80px;
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .packages-section {
+                width: 85%;
+                padding: 30px;
+            }
+
+            .package-card {
+                width: 120px;
+                font-size: 14px;
+            }
+
+            .packages-container {
+                gap: 16px;
+            }
+
+            .social-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-description {
+                font-size: 14px;
+            }
+
+            .packages-section {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .package-card {
+                width: 100px;
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+
+            .package-name {
+                font-size: 18px;
+            }
+
+            .package-price {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Overlay -->
+    <div class="background-overlay"></div>
+
+    <!-- Logo -->
+    <a href="#" class="logo">
+        <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" fill="none"/>
+            <text x="50" y="70" font-family="Georgia, serif" font-size="56" font-weight="bold" text-anchor="middle" fill="url(#logoGradient)">H</text>
+            <line x1="15" y1="50" x2="85" y2="50" stroke="url(#logoGradient)" stroke-width="2" opacity="0.6"/>
+        </svg>
+        <span class="logo-text">HAFH</span>
+    </a>
+
+    <!-- Social Media Links -->
+    <div class="social-links">
+        <a href="https://instagram.com" target="_blank" class="social-link" title="Instagram">📷</a>
+        <a href="https://facebook.com" target="_blank" class="social-link" title="Facebook">f</a>
+        <a href="https://twitter.com" target="_blank" class="social-link" title="Twitter">𝕏</a>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="language-toggle" id="languageToggle">🇫🇷</button>
+        <div class="language-buttons" id="languageButtons">
+            <button class="language-btn active" data-lang="fr">🇫🇷 Français</button>
+            <button class="language-btn" data-lang="en">🇬🇧 English</button>
+            <button class="language-btn" data-lang="es">🇪🇸 Español</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title" data-i18n="title">Home Away From Home</h1>
+                <p class="hero-description" data-i18n="heroDesc">Moving to Paris? We make settling in smooth and stress-free.
+
+Get expert guidance through admin tasks, practical tips, and personalized services to help you enjoy your new home from day one.</p>
+            </div>
+        </section>
+
+        <!-- Packages Section -->
+        <section class="packages-section">
+            <div class="packages-container">
+                <!-- BASIC PACKAGE -->
+                <div class="package-card" data-package="basic" onclick="selectPackage('basic')">
+                    <div class="package-header">
+                        <div class="package-name" data-i18n="basicName">🎯 Basic</div>
+                        <div class="package-price">€10-100</div>
+                        <div class="package-time" data-i18n="basicTime">⏱️ 10 min - 2 days</div>
+                    </div>
+                    <div class="package-description" data-i18n="basicDesc">
+                        Pick and choose services à la carte. Perfect for the independent traveler.
+                    </div>
+                </div>
+
+                <!-- CLASSIC PACKAGE -->
+                <div class="package-card" data-package="classic" onclick="selectPackage('classic')">
+                    <div class="package-header">
+                        <div class="package-name" data-i18n="classicName">⭐ Classic</div>
+                        <div class="package-price">€100</div>
+                        <div class="package-time" data-i18n="classicTime">⏱️ 24h response</div>
+                    </div>
+                    <div class="package-description" data-i18n="classicDesc">
+                        Accommodation assistance with professional guidance. We connect you with industry experts.
+                    </div>
+                </div>
+
+                <!-- VIP PACKAGE -->
+                <div class="package-card" data-package="vip" onclick="selectPackage('vip')">
+                    <div class="package-header">
+                        <div class="package-name" data-i18n="vipName">✨ VIP</div>
+                        <div class="package-price">€110-210</div>
+                        <div class="package-time" data-i18n="vipTime">⏱️ Priority support</div>
+                    </div>
+                    <div class="package-description" data-i18n="vipDesc">
+                        Everything in Basic + Classic. The ultimate settlement experience with full support.
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETAILS SECTION -->
+            <div class="details-section" id="detailsSection">
+                <div class="details-content">
+                    <div class="detail-title" id="detailTitle">Select a package to learn more</div>
+                    <div class="detail-description" id="detailDescription"></div>
+                    <ul class="detail-list" id="detailList"></ul>
+                </div>
+                <button class="detail-cta-button" id="ctaButton" onclick="navigateToPackage()">Continue →</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Translation Dictionary
+        const translations = {
+            en: {
+                title: 'Home Away From Home',
+                heroDesc: 'Moving to Paris? We make settling in smooth and stress-free.\n\nGet expert guidance through admin tasks, practical tips, and personalized services to help you enjoy your new home from day one.',
+                basicName: '🎯 Basic',
+                basicTime: '⏱️ 10 min - 2 days',
+                basicDesc: 'Pick and choose services à la carte. Perfect for the independent traveler.',
+                classicName: '⭐ Classic',
+                classicTime: '⏱️ 24h response',
+                classicDesc: 'Accommodation assistance with professional guidance. We connect you with industry experts.',
+                vipName: '✨ VIP',
+                vipTime: '⏱️ Priority support',
+                vipDesc: 'Everything in Basic + Classic. The ultimate settlement experience with full support.',
+                basicDetailTitle: 'Basic Package - À La Carte Services',
+                basicDetailDesc: 'Customize your experience by selecting only the services you need.',
+                classicDetailTitle: 'Classic Package - Accommodation Focus',
+                classicDetailDesc: 'We specialize in accommodation assistance and connect you with proven professionals.',
+                vipDetailTitle: 'VIP Package - Complete Settlement',
+                vipDetailDesc: 'Get everything you need to settle comfortably in Paris. Full support from all our services.',
+                ctaContinue: 'Continue →'
+            },
+            fr: {
+                title: 'Chez Soi Loin de Chez Soi',
+                heroDesc: 'Vous déménagez à Paris? Nous rendons votre installation lisse et sans stress.\n\nRecevez des conseils d\'experts pour les tâches administratives, des conseils pratiques et des services personnalisés pour profiter de votre nouveau chez-vous dès le premier jour.',
+                basicName: '🎯 Basique',
+                basicTime: '⏱️ 10 min - 2 jours',
+                basicDesc: 'Choisissez les services à la carte. Parfait pour le voyageur indépendant.',
+                classicName: '⭐ Classique',
+                classicTime: '⏱️ Réponse sous 24h',
+                classicDesc: 'Assistance en matière de logement avec conseils professionnels. Nous vous mettons en contact avec des experts du secteur.',
+                vipName: '✨ VIP',
+                vipTime: '⏱️ Support prioritaire',
+                vipDesc: 'Tout de Basique + Classique. L\'expérience d\'installation ultime avec un support complet.',
+                basicDetailTitle: 'Forfait Basique - Services À La Carte',
+                basicDetailDesc: 'Personnalisez votre expérience en sélectionnant uniquement les services dont vous avez besoin.',
+                classicDetailTitle: 'Forfait Classique - Accent sur le Logement',
+                classicDetailDesc: 'Nous nous spécialisons dans l\'assistance en matière de logement et vous mettons en contact avec des professionnels éprouvés.',
+                vipDetailTitle: 'Forfait VIP - Installation Complète',
+                vipDetailDesc: 'Obtenez tout ce dont vous avez besoin pour vous installer confortablement à Paris. Support complet de tous nos services.',
+                ctaContinue: 'Continuer'
+            },
+            es: {
+                title: 'Hogar Lejos del Hogar',
+                heroDesc: '¿Te mudas a París? Hacemos que tu instalación sea suave y sin estrés.\n\nRecibe orientación experta a través de tareas administrativas, consejos prácticos y servicios personalizados para disfrutar tu nuevo hogar desde el primer día.',
+                basicName: '🎯 Básico',
+                basicTime: '⏱️ 10 min - 2 días',
+                basicDesc: 'Elige y selecciona servicios à la carte. Perfecto para el viajero independiente.',
+                classicName: '⭐ Clásico',
+                classicTime: '⏱️ Respuesta en 24h',
+                classicDesc: 'Asistencia de alojamiento con orientación profesional. Te conectamos con expertos de la industria.',
+                vipName: '✨ VIP',
+                vipTime: '⏱️ Soporte prioritario',
+                vipDesc: 'Todo en Básico + Clásico. La experiencia de instalación definitiva con soporte completo.',
+                basicDetailTitle: 'Paquete Básico - Servicios À La Carte',
+                basicDetailDesc: 'Personaliza tu experiencia seleccionando solo los servicios que necesitas.',
+                classicDetailTitle: 'Paquete Clásico - Enfoque en Alojamiento',
+                classicDetailDesc: 'Nos especializamos en asistencia de alojamiento y te conectamos con profesionales probados.',
+                vipDetailTitle: 'Paquete VIP - Instalación Completa',
+                vipDetailDesc: 'Obtén todo lo que necesitas para instalarte cómodamente en París. Soporte completo de todos nuestros servicios.',
+                ctaContinue: 'Continuar'
+            }
+        };
+
+        // Detailed lists for each package
+        const detailedLists = {
+            en: {
+                basicList: [
+                    'eSIM setup assistance',
+                    'Internet box configuration',
+                    'Bank account opening guidance',
+                    'Transport card (Navigo) info',
+                    'Insurance recommendations',
+                    'And more...'
+                ],
+                classicList: [
+                    'Personalized accommodation search',
+                    'Lease review & negotiation support',
+                    'Connection to real estate professionals',
+                    'Move-in checklist & guidance',
+                    '24-hour response time',
+                    'First-hand local knowledge'
+                ],
+                vipList: [
+                    'All Basic package services',
+                    'All Classic package services',
+                    'Priority support & faster responses',
+                    'Administrative task assistance',
+                    'Integration tips & local insights',
+                    'Dedicated support team'
+                ]
+            },
+            fr: {
+                basicList: [
+                    'Assistance de configuration eSIM',
+                    'Configuration de la box Internet',
+                    'Conseils d\'ouverture de compte bancaire',
+                    'Information sur la carte de transport (Navigo)',
+                    'Recommandations d\'assurance',
+                    'Et plus...'
+                ],
+                classicList: [
+                    'Recherche personnalisée de logement',
+                    'Support en matière de révision et de négociation de bail',
+                    'Connexion avec des professionnels de l\'immobilier',
+                    'Liste de contrôle d\'installation et guide',
+                    'Temps de réponse de 24 heures',
+                    'Connaissance locale directe'
+                ],
+                vipList: [
+                    'Tous les services du forfait Basique',
+                    'Tous les services du forfait Classique',
+                    'Support prioritaire et réponses plus rapides',
+                    'Assistance pour les tâches administratives',
+                    'Conseils d\'intégration et aperçus locaux',
+                    'Équipe de support dédiée'
+                ]
+            },
+            es: {
+                basicList: [
+                    'Asistencia de configuración de eSIM',
+                    'Configuración de caja de Internet',
+                    'Guía para apertura de cuenta bancaria',
+                    'Información de tarjeta de transporte (Navigo)',
+                    'Recomendaciones de seguros',
+                    'Y más...'
+                ],
+                classicList: [
+                    'Búsqueda personalizada de alojamiento',
+                    'Apoyo en revisión y negociación de arrendamiento',
+                    'Conexión con profesionales inmobiliarios',
+                    'Lista de verificación de mudanza y guía',
+                    'Tiempo de respuesta de 24 horas',
+                    'Conocimiento local de primera mano'
+                ],
+                vipList: [
+                    'Todos los servicios del paquete Básico',
+                    'Todos los servicios del paquete Clásico',
+                    'Soporte prioritario y respuestas más rápidas',
+                    'Asistencia en tareas administrativas',
+                    'Consejos de integración e información local',
+                    'Equipo de soporte dedicado'
+                ]
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('language') || 'fr';
+
+        // Language selector functionality
+        const languageToggle = document.getElementById('languageToggle');
+        const languageButtons = document.getElementById('languageButtons');
+
+        window.addEventListener('DOMContentLoaded', function() {
+            changeLanguage(currentLanguage);
+        });
+
+        languageToggle.addEventListener('click', () => {
+            languageButtons.classList.toggle('active');
+        });
+
+        // Close language selector when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.language-selector')) {
+                languageButtons.classList.remove('active');
+            }
+        });
+
+        // Language button functionality
+        document.querySelectorAll('.language-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.dataset.lang;
+                changeLanguage(lang);
+            });
+        });
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            
+            // Update toggle button
+            const languageMap = { en: '🇬🇧', fr: '🇫🇷', es: '🇪🇸' };
+            languageToggle.textContent = languageMap[lang] || '🇫🇷';
+            
+            // Update active state
+            document.querySelectorAll('.language-btn').forEach(b => {
+                b.classList.remove('active');
+                if (b.dataset.lang === lang) {
+                    b.classList.add('active');
+                }
+            });
+            
+            // Update text content
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Close menu
+            languageButtons.classList.remove('active');
+        }
+
+        let selectedPackage = null;
+
+        function selectPackage(packageName) {
+            const selectedCard = document.querySelector(`[data-package="${packageName}"].package-card`);
+            const packagesSection = document.querySelector('.packages-section');
+            const detailsSection = document.getElementById('detailsSection');
+            
+            if (selectedCard.classList.contains('active')) {
+                // Deselect
+                selectedCard.classList.remove('active');
+                detailsSection.classList.remove('active');
+                packagesSection.classList.remove('expanded');
+                selectedPackage = null;
+            } else {
+                // Remove active state from all cards
+                document.querySelectorAll('.package-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                
+                // Select
+                selectedCard.classList.add('active');
+                selectedPackage = packageName;
+                
+                // Update details
+                updateDetails(packageName);
+                
+                // Show details and expand section
+                detailsSection.classList.add('active');
+                packagesSection.classList.add('expanded');
+            }
+        }
+
+        function updateDetails(packageName) {
+            const detailsTitles = {
+                basic: 'basicDetailTitle',
+                classic: 'classicDetailTitle',
+                vip: 'vipDetailTitle'
+            };
+            
+            const detailsDescs = {
+                basic: 'basicDetailDesc',
+                classic: 'classicDetailDesc',
+                vip: 'vipDetailDesc'
+            };
+
+            const listKeys = {
+                basic: 'basicList',
+                classic: 'classicList',
+                vip: 'vipList'
+            };
+
+            const titleKey = detailsTitles[packageName];
+            const descKey = detailsDescs[packageName];
+            const listKey = listKeys[packageName];
+
+            // Update title
+            const titleEl = document.getElementById('detailTitle');
+            titleEl.textContent = translations[currentLanguage][titleKey];
+
+            // Update description
+            const descEl = document.getElementById('detailDescription');
+            descEl.textContent = translations[currentLanguage][descKey];
+
+            // Update list
+            const listEl = document.getElementById('detailList');
+            listEl.innerHTML = '';
+            if (detailedLists[currentLanguage] && detailedLists[currentLanguage][listKey]) {
+                detailedLists[currentLanguage][listKey].forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    listEl.appendChild(li);
+                });
+            }
+        }
+
+        function navigateToPackage() {
+            if (!selectedPackage) return;
+            sessionStorage.setItem('selectedPackage', selectedPackage);
+            const packagePages = {
+                'basic': 'basic.html',
+                'classic': 'classic.html',
+                'vip': 'vip.html'
+            };
+            window.location.href = packagePages[selectedPackage] || 'quiz.html';
+        }
+    </script>
+</body>
+</html>

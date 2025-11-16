@@ -1,0 +1,90 @@
+/* ==================== VARIABLES ==================== */
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #f97316;
+    --light-bg: #f8f9fa;
+    --text-dark: #1a1a1a;
+    --text-light: #666666;
+    --border-color: #e0e0e0;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+    --sidebar-width: 280px;
+    --form-gap: 30px;
+    --form-padding: 14px 24px;
+    --animation-speed: 0.3s;
+}
+
+/* ==================== LANGUAGE SELECTOR ==================== */
+.language-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 200;
+}
+
+.language-toggle {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--animation-speed) ease;
+    font-weight: 600;
+}
+
+.language-toggle:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.language-buttons {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: var(--shadow-md);
+}
+
+.language-buttons.active {
+    display: flex;
+}
+
+.lang-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--animation-speed) ease;
+    font-weight: 600;
+}
+
+.lang-btn:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.lang-btn.active {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}

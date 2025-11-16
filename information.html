@@ -1073,6 +1073,7 @@
         let currentLanguage = localStorage.getItem('language') || 'en';
         let selectedServices = [];
         let currentServiceIndex = 0;
+        let lastActiveServiceIndex = -1; // Track last active to avoid unnecessary updates
         let formData = {};
 
         // ==================== INITIALIZATION ====================
@@ -1087,13 +1088,41 @@
         });
 
         function loadSelectedServices() {
-            const saved = sessionStorage.getItem('selectedBasicServices');
-            if (saved) {
+            try {
+                const saved = sessionStorage.getItem('selectedBasicServices');
+                if (!saved) {
+                    console.warn('No selected services found in session storage');
+                    // Redirect back to service selection
+                    setTimeout(() => {
+                        window.location.href = 'basic.html';
+                    }, 1000);
+                    return;
+                }
+                
                 const indices = JSON.parse(saved);
+                if (!Array.isArray(indices) || indices.length === 0) {
+                    throw new Error('Invalid service indices');
+                }
+                
                 const services = serviceConfigs[currentLanguage];
-                selectedServices = indices.map(i => services[i]);
+                selectedServices = indices
+                    .filter(i => services[i])
+                    .map(i => services[i]);
+                
+                if (selectedServices.length === 0) {
+                    throw new Error('No valid services found');
+                }
+            } catch (error) {
+                console.error('Error loading services:', error);
+                // Redirect to service selection with error
+                window.location.href = 'basic.html';
+                return;
             }
-            document.getElementById('serviceCount').textContent = selectedServices.length;
+            
+            const countEl = document.getElementById('serviceCount');
+            if (countEl) {
+                countEl.textContent = selectedServices.length;
+            }
         }
 
         function renderServicesList() {
@@ -1104,6 +1133,7 @@
                 const item = document.createElement('div');
                 item.className = 'service-item' + (index === 0 ? ' active' : '');
                 item.id = `service-item-${index}`;
+                item.dataset.index = index; // For efficient selector queries
                 item.onclick = () => scrollToService(index);
 
                 item.innerHTML = `
@@ -1242,12 +1272,28 @@
                 }
             });
 
-            // Update sidebar highlight
-            document.querySelectorAll('.service-item').forEach((item, i) => {
-                item.classList.toggle('active', i === activeIndex);
-            });
+            // Only update if active service changed - reduces unnecessary DOM updates
+            if (activeIndex !== lastActiveServiceIndex) {
+                if (lastActiveServiceIndex !== -1) {
+                    document.querySelector(`.service-item[data-index="${lastActiveServiceIndex}"]`)
+                        ?.classList.remove('active');
+                }
+                document.querySelector(`.service-item[data-index="${activeIndex}"]`)
+                    ?.classList.add('active');
+                lastActiveServiceIndex = activeIndex;
+            }
 
             currentServiceIndex = activeIndex;
+        }
+
+        /**
+         * Helper: Get checked checkboxes for a field
+         * Eliminates duplication across multiple functions
+         */
+        function getCheckedCheckboxValues(fieldId) {
+            return Array.from(document.querySelectorAll(`input[name="${fieldId}"]`))
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
         }
 
         function updateFormData(fieldId) {
@@ -1262,9 +1308,7 @@
             }
 
             if (element.type === 'checkbox') {
-                const checkboxes = document.querySelectorAll(`input[name="${fieldId}"]`);
-                const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-                formData[serviceId][fieldName] = selected;
+                formData[serviceId][fieldName] = getCheckedCheckboxValues(fieldId);
             } else {
                 formData[serviceId][fieldName] = element.value;
             }
@@ -1289,13 +1333,14 @@
                         let isFilledAndValid = false;
 
                         if (field.type === 'checkbox') {
-                            const checkboxes = document.querySelectorAll(`input[name="${fieldId}"]`);
-                            const selected = Array.from(checkboxes).filter(cb => cb.checked);
+                            const selected = getCheckedCheckboxValues(fieldId);
                             isFilledAndValid = selected.length > 0 || !field.required;
                             if (selected.length > 0) filledFields++;
                         } else {
                             const value = element.value;
-                            isFilledAndValid = value && value !== 'Sélectionner...' && value !== 'Select...';
+                            // Check against all placeholder values
+                            const placeholders = ['Select...', 'Sélectionner...', 'Seleccionar...'];
+                            isFilledAndValid = value && !placeholders.includes(value);
                             if (isFilledAndValid) filledFields++;
                         }
                     }
@@ -1326,12 +1371,12 @@
 
                     if (element && field.required) {
                         if (field.type === 'checkbox') {
-                            const checkboxes = document.querySelectorAll(`input[name="${fieldId}"]`);
-                            const selected = Array.from(checkboxes).filter(cb => cb.checked);
+                            const selected = getCheckedCheckboxValues(fieldId);
                             if (selected.length === 0) allFieldsFilled = false;
                         } else {
                             const value = element.value;
-                            if (!value || value === 'Sélectionner...' || value === 'Select...') {
+                            const placeholders = ['Select...', 'Sélectionner...', 'Seleccionar...'];
+                            if (!value || placeholders.includes(value)) {
                                 allFieldsFilled = false;
                             }
                         }
@@ -1397,10 +1442,29 @@
         }
 
         function goToPayment() {
-            // Save form data to session storage
-            sessionStorage.setItem('serviceFormData', JSON.stringify(formData));
-            // Redirect to payment page
-            window.location.href = 'payment.html';
+            try {
+                // Validate that we have data
+                if (!formData || Object.keys(formData).length === 0) {
+                    console.warn('No form data to submit');
+                    alert('Please fill in at least one service form.');
+                    return;
+                }
+                
+                // Save form data to session storage
+                try {
+                    sessionStorage.setItem('serviceFormData', JSON.stringify(formData));
+                } catch (storageError) {
+                    console.error('Failed to save form data:', storageError);
+                    alert('Failed to save your progress. Please check your browser storage.');
+                    return;
+                }
+                
+                // Redirect to payment page
+                window.location.href = 'payment.html';
+            } catch (error) {
+                console.error('Error navigating to payment:', error);
+                alert('An error occurred. Please try again.');
+            }
         }
 
         function toggleLanguageMenu() {
